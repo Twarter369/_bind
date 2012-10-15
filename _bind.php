@@ -46,7 +46,7 @@
 	function __construct(){
 		//parse URI/Request and set up Arrays for values
 		define("REQUEST_MAP", self::map_request_keys_and_values());
-		define("REQUEST", explode('/',$_SERVER['REQUEST_URI']);
+		define("REQUEST", explode('/',$_SERVER['REQUEST_URI']));
 	}
 
 	static function view($view,$data){
