@@ -43,6 +43,10 @@
 	*	Views Location: APP_ROOT/views/*.phtml
 	*/
 
+	function __construct(){
+		//load URI
+	}
+
 	static function view($view,$data){
 	    if (is_array($view)) {
 		//multiple views passed
@@ -118,4 +122,31 @@
                 throw new Exception("URL, $path, not found.");
             }
         }
+
+       /* map_request_keys_and_values
+	* Author: Weston Watson - Dec 8, 2011
+	*
+	* this method takes the URI Request and 
+	* pairs up keys and values from the URL/Request
+	* every other segment is a value using previous
+	* segment as a key...
+	* Example DOMAIN/key/value/key/value/key/value/etc...
+	*/
+
+	private function map_request_keys_and_values(){ 
+		//declare an array of request and add add basic page info 
+		$requestArray = array(); 
+		$requests = explode('/',$_SERVER['REQUEST_URI']);
+		foreach ($requests as $request)
+		{ 
+			$pos = strrpos($request, ':');
+			if($pos >0)
+			{
+				list($key,$value)=explode(':', $request);
+				if(!empty($value) || $value='') $requestArray[urldecode($key)]=urldecode($value);
+			}
+		}
+		return $requestArray ; 
+	} 
+
     }
