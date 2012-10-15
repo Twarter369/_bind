@@ -44,7 +44,9 @@
 	*/
 
 	function __construct(){
-		//load URI
+		//parse URI/Request and set up Arrays for values
+		define("REQUEST_MAP", self::map_request_keys_and_values());
+		define("REQUEST", explode('/',$_SERVER['REQUEST_URI']);
 	}
 
 	static function view($view,$data){
@@ -133,7 +135,7 @@
 	* Example DOMAIN/key/value/key/value/key/value/etc...
 	*/
 
-	private function map_request_keys_and_values(){ 
+	static function map_request_keys_and_values(){ 
 		//declare an array of request and add add basic page info 
 		$requestArray = array(); 
 		$requests = explode('/',$_SERVER['REQUEST_URI']);

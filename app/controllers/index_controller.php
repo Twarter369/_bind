@@ -12,7 +12,7 @@
 $routes = array(
 	'/' => 'index_page',
 	'/help.html' => 'help_page',
-	'/log/[a-zA-Z0-9].html' => 'logs_page'
+	'/log/[a-zA-Z0-9].html' => 'logs_page' 
 	);	
 	
 
