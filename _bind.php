@@ -46,18 +46,30 @@
 	function __construct(){
 		//parse URI/Request and set up Arrays for values
 		define("REQUEST_MAP", self::map_request_keys_and_values());
-		define("REQUEST", explode('/',$_SERVER['REQUEST_URI']);
+		define("REQUEST", explode('/',$_SERVER['REQUEST_URI']));
 	}
 
+	/*
+	 * view
+	 * 
+	 * Author: Weston Watson - Oct 15, 2012
+	 * Takes either direct path to view or general view name and loads
+	 * it from app/views/VIEW_NAME - also takes an array of either.
+	 * 
+	 * _bind:view(array('header','app/views/forms/_form.phtml','footer'),$d);
+	 */
+	
 	static function view($view,$data){
 	    if (is_array($view)) {
 		//multiple views passed
 		foreach($view as $views){
-			echo self::renderPhpToString( (strpos($views,'.')) ? $views : ('./views/' + $views + '.phtml'), $data );
+			$current_view = strpos($views,'.')!==false ? $views : ('app/views/' . $views . '.phtml');
+			echo self::renderPhpToString( $current_view, $data );
 		}
 	    }elseif(is_string($view)){
 		//render just one view passed
-		echo self::renderPhpToString( (strpos($view,'.')) ? $view : ('./views/' + $view + '.phtml'), $data );
+		$the_view = strpos($view,'.')!==false ? $view : ('app/views/' . $view . '.phtml');
+		echo self::renderPhpToString( $the_view, $data );
 	    }else{
 		throw new Exception('Invalid View Type Passed');
 	    }
@@ -71,7 +83,7 @@
 
 	public function renderPhpToString($file, $vars=null){
 	    if (!file_exists($file)) return false; //Modified by Weston Watson - Oct 14, 2012
-
+	    
 	    if (is_array($vars) && !empty($vars)) {
 		extract($vars);
 	    }
@@ -93,14 +105,23 @@
          *
          */
 
-        static function route ($urls) {
+        static function route ($urls,$remove=null) {
 
             $method = strtoupper($_SERVER['REQUEST_METHOD']);
             $path = $_SERVER['REQUEST_URI'];
+	    
+	    /*
+	     * $remove is used for Testing purposes. Before you set up .htaccess
+	     * to remove the /index.php from the URI, you can set $remove to
+	     * ignore a particular part of the Request, in my case it would be 
+	     * Example _bind::route($routes,'/test/index.php');
+	     */
+	    
+	    if ($remove) $path = str_replace ($remove, '', $path);
+	    
+	    $found = false;
 
-            $found = false;
-
-            krsort($urls);
+            krsort($urls); //Why sort? Shouldn't we leave it in the Coder's Order?
 
             foreach ($urls as $regex => $class) {
                 $regex = str_replace('/', '\/', $regex);
@@ -129,10 +150,8 @@
 	* Author: Weston Watson - Dec 8, 2011
 	*
 	* this method takes the URI Request and 
-	* pairs up keys and values from the URL/Request
-	* every other segment is a value using previous
-	* segment as a key...
-	* Example DOMAIN/key/value/key/value/key/value/etc...
+	* pairs up keys and values from the URL segments
+	* Example DOMAIN/key:value/key:value/key:value/etc...
 	*/
 
 	static function map_request_keys_and_values(){ 
@@ -152,3 +171,6 @@
 	} 
 
     }
+    
+    
+?>
